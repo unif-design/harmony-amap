@@ -1,0 +1,33 @@
+# 依据 https://github.com/unif-skill/uni-skills/blob/491d2bbc4c4106a1d87de85871e67faf70a856d0/skills/uni-github-delivery/templates/workflows/ci.yml 做原生鸿蒙适配。
+# 本检查不执行 ArkTS 编译、HAR 构建、设备验证或发布。
+name: 仓库检查
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repository-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  actionlint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: 检查工作流
+        env:
+          ACTIONLINT_VERSION: 1.7.12
+        run: |
+          curl -sSfL "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz" | tar -xz actionlint
+          shellcheck --version
+          ./actionlint -color -shellcheck=shellcheck

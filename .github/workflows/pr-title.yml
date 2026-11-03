@@ -1,0 +1,31 @@
+# 依据 https://github.com/unif-skill/uni-skills/blob/491d2bbc4c4106a1d87de85871e67faf70a856d0/skills/uni-github-delivery/templates/workflows/pr-title.yml 做原生鸿蒙适配。
+name: PR 标题
+on:
+  pull_request_target:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  pr-title:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # 只读取 PR 标题，不检出或执行 PR 代码。
+      - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
